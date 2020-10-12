@@ -55,3 +55,35 @@ Pick의 우측면에는 Pick의 전체 전원(메인보드, 모터, 블루투스
 ### 코드 설명
 
 각 예제 프로젝트의 README.md 파일과, 예제 소스코드의 주석을 참고하시기 바랍니다.
+
+### 기본 설정값
+
+#### 블루투스 모듈
+ - 모듈 이름 : RNM0000 (0000부분은 다른 숫자 값일 수 있음)
+ - baudrate : 9600
+ - password : 1234
+
+#### 매니퓰레이터
+매니퓰레이터의 모든 모터 position을 센터로 이동시켰을 때, 매니퓰레이터가 일직선이 되기 위해 6번 모터와 7번 모터에 offset이 설정되어있습니다.
+ - 6번 모터 offset : 0x97
+ - 7번 모터 offset : 0x0F
+
+### 스마트 서보 모터 관련
+#### SetPosition
+ - 0이 CCW방향이고, 1023이 CW방향입니다.
+ - 센터에서 CCW방향으로 약 170도, CW방향으로 약 170도 범위를 가집니다.
+
+#### 모터 offset 설정
+모터 위치값의 범위는 0~1023이고, 512 위치로 이동시키면 센터가 됩니다. 모터 센터가 맞지 않는 경우에는 모터 전원을 끈 상태에서 손으로 모터를 천천히 돌려 센터 위치에 맞춰주고, MOS_S2MotorSetZeroPosition( uint8_t id ) 함수를 사용하면 모터의 현재 위치를 센터 위치로 설정할 수 있습니다.
+
+### Pixy2 카메라 관련
+Pixy2 카메라는 물체 인식을 위한 시그니처 설정, 카메라 밝기 등의 고급 설정을 위해 PixyMon v2 프로그램을 사용합니다.
+PixyMon v2 프로그램은 아래 링크에서 다운받을 수 있습니다.\
+PixyMon v2 다운로드 링크 : https://pixycam.com/downloads-pixy2/
+
+다운받은 후 PixyMon v2를 실행하고, "Configure(톱니바퀴 아이콘)"-"Pixy Parameters (saved on Pixy)"-"Interface"에서 "Data out port" 를 "I2C"로 꼭 설정해주어야 합니다.
+
+그 외 설정은 Pixy2 문서를 참고해주시기 바랍니다.\
+Pixy2 문서 : https://docs.pixycam.com/wiki/doku.php?id=wiki:v2:start \
+Pixy2 물체 인식시키기 : https://docs.pixycam.com/wiki/doku.php?id=wiki:v2:teach_pixy_an_object_2 \
+PixyMon v2 문서 : https://docs.pixycam.com/wiki/doku.php?id=wiki:v2:pixymon_index

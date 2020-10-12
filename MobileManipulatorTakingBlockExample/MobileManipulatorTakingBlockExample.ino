@@ -10,10 +10,10 @@ SoftwareSerial DebuggingSerial( DEBUGGING_SERIAL_RX, DEBUGGING_SERIAL_TX ); // R
 #include "MOS_S2Motor.h"
 
 // ------------------ for mobilebase
-#define MOTOR_ID_FL                 0x10 // 전방 왼쪽 모터 아이디
-#define MOTOR_ID_FR                 0x06 // 전방 오른쪽 모터 아이디
-#define MOTOR_ID_BL                 0x0E // 후방 왼쪽 모터 아이디
-#define MOTOR_ID_BR                 0x05 // 후방 오른쪽 모터 아이디
+#define MOTOR_ID_FL                 0x01 // 전방 왼쪽 모터 아이디
+#define MOTOR_ID_FR                 0x02 // 전방 오른쪽 모터 아이디
+#define MOTOR_ID_BL                 0x03 // 후방 왼쪽 모터 아이디
+#define MOTOR_ID_BR                 0x04 // 후방 오른쪽 모터 아이디
 
 #define MOTOR_FL_SPEED_RATIO        1.0 // 전방 왼쪽 모터 속도 보정용
 #define MOTOR_FR_SPEED_RATIO        1.0 // 전방 오른쪽 모터 속도 보정용
@@ -47,10 +47,10 @@ void moveMobileBaseWithFourVelocity( int16_t speedFL, int16_t speedFR, int16_t s
 
 // ------------------ for robot arm
 
-#define ARM_SERVO_ID_1      0x0D // 매니퓰레이터 base모터
-#define ARM_SERVO_ID_2      0x08
-#define ARM_SERVO_ID_3      0x03
-#define ARM_SERVO_ID_4      0x07 // 매니퓰레이터 엔드이펙터에 가장 가까운 모터
+#define ARM_SERVO_ID_1      0x05 // 매니퓰레이터 base모터
+#define ARM_SERVO_ID_2      0x06
+#define ARM_SERVO_ID_3      0x07
+#define ARM_SERVO_ID_4      0x08 // 매니퓰레이터 엔드이펙터에 가장 가까운 모터
 
 #define ARM_SERVO_1_VALUE_MIN_LIMIT    0      // 각 모터의 최소, 최대 값
 #define ARM_SERVO_1_VALUE_MAX_LIMIT    1023
@@ -105,6 +105,26 @@ Pixy2I2C pixy;
 void setup() {
   DebuggingSerial.begin( DEBUGGING_SERIAL_BAUDRATE ); // 디버깅 시리얼 초기화
   Serial.begin( MOS_S2_MOTOR_BAUDRATE ); // 모터 제어 버스 초기화
+
+  runOneMotorWithSpeed( MOTOR_ID_FL, 0 ); // 모바일베이스 정지
+  runOneMotorWithSpeed( MOTOR_ID_FR, 0 );
+  runOneMotorWithSpeed( MOTOR_ID_BL, 0 );
+  runOneMotorWithSpeed( MOTOR_ID_BR, 0 );
+
+  MOS_S2MotorSetTorque( MOTOR_ID_FL, 0 ); // 모바일베이스 모터 토크 off
+  MOS_S2MotorSetTorque( MOTOR_ID_FR, 0 );
+  MOS_S2MotorSetTorque( MOTOR_ID_BL, 0 );
+  MOS_S2MotorSetTorque( MOTOR_ID_BR, 0 );
+
+  MOS_S2MotorSetTorque( ARM_SERVO_ID_1, 0 ); // 매니퓰레이터 모터 토크 off
+  MOS_S2MotorSetTorque( ARM_SERVO_ID_2, 0 );
+  MOS_S2MotorSetTorque( ARM_SERVO_ID_3, 0 );
+  MOS_S2MotorSetTorque( ARM_SERVO_ID_4, 0 );
+  
+  gripper.attach(SERVO_GRIPPER_PIN); // 그리퍼 사용 준비
+
+  // 그리퍼 열기
+  gripper.write(GRIP_ANGLE_OPEN);
   
   MOS_S2MotorSetTorque( MOTOR_ID_FL, 1 ); // 모바일베이스 모터 토크 on
   MOS_S2MotorSetTorque( MOTOR_ID_FR, 1 );
@@ -115,13 +135,9 @@ void setup() {
   MOS_S2MotorSetTorque( ARM_SERVO_ID_2, 1 );
   MOS_S2MotorSetTorque( ARM_SERVO_ID_3, 1 );
   MOS_S2MotorSetTorque( ARM_SERVO_ID_4, 1 );
-  
-  gripper.attach(SERVO_GRIPPER_PIN); // 그리퍼 사용 준비
 
   // 초기 팔 자세
   robotArmForwardMove( 0, 50, -142, 0 );
-  // 그리퍼 열기
-  gripper.write(GRIP_ANGLE_OPEN);
 
   delay(3000);
 }
