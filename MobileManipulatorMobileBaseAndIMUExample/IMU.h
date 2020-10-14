@@ -51,7 +51,6 @@ void updateIMUValue()
   float sum = 0;
   float yawAngleTemp = 0;
   int16_t ax, ay, az, gx, gy, gz;
-  static uint32_t prevMicros = micros();
   
   mpu.getMotion6( &ax, &ay, &az, &gx, &gy, &gz );
 
