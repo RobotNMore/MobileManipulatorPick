@@ -4,10 +4,12 @@
 
 이 저장소의 코드들은 각 물류미션물품을 정해진 순서에 맞춰 정해진 위치로 옮기는 물류분류로봇의 기본 동작들이 구현되어 있습니다.
 
-MobileManipulator_Pick은 아두이노 우노 호환보드를 중심으로 전방향 구동이 가능한 메카넘 휠로 구성된 모바일베이스, 물류미션물품을 인식하기 위한 Pixy2카메라, 물류미션물품을 이동시키기 위한 4 자유도의 매니퓰레이터와 그리퍼, Pick의 이동 상태를 파악하기 위한 두 개의 PSD센서와 6축 IMU센서로 구성됩니다.
+MobileManipulator_Pick은 아두이노 우노 호환보드를 중심으로 전방향 구동이 가능한 메카넘 휠로 구성된 모바일베이스, 물류미션물품을 인식하기 위한 Pixy2카메라, 물류미션물품을 이동시키기 위한 4 자유도의 매니퓰레이터와 그리퍼, Pick의 이동 상태를 파악하기 위한 두 개의 PSD센서와 6축 IMU센서 그리고 블루투스 모듈로 구성됩니다.
 
  * 모바일 매니퓰레이터 Pick에 사용되는 스마트 서보 모터는 로보로보의 MOS-S2 제품을 사용하였습니다.\
  소스코드 안에서는 MOS_S2_MOTOR 또는 MOS_S2Motor로 명시되어 있습니다. 참고 부탁드립니다.
+ * Serial은 Pick의 모터와 통신하는데 사용하기 때문에 센서 값이나 Pick의 주행 상태 확인, 디버깅을\
+ 위해서는 소프트웨어 시리얼과 블루투스 모듈을 사용해야 합니다.
 
 코드는 두 개의 샘플 프로젝트로 구성되어 있습니다.
 
@@ -55,6 +57,17 @@ Pick의 우측면에는 Pick의 전체 전원(메인보드, 모터, 블루투스
 ### 코드 설명
 
 각 예제 프로젝트의 README.md 파일과, 예제 소스코드의 주석을 참고하시기 바랍니다.
+
+### 모듈 정보
+ - 블루투스 : HC-06\
+ datasheet : https://html.alldatasheet.co.kr/html-pdf/1179032/ETC1/HC-06/109/1/HC-06.html
+ - PSD : GP2Y0A21YK0F\
+ datasheet : https://global.sharp/products/device/lineup/data/pdf/datasheet/gp2y0a21yk_e.pdf
+ - IMU : MPU6050\
+ datasheet : https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf \
+ register map : https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Register-Map1.pdf
+ - 카메라 : Pixy2\
+ documentation : https://docs.pixycam.com/wiki/doku.php?id=wiki:v2:start
 
 ### 기본 설정값
 
