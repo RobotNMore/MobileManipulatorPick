@@ -166,10 +166,10 @@ void loop() {
     {
       case 0 : // 2초 전진
       {
-        runOneMotorWithSpeed( MOTOR_ID_FL, MOBILEBASE_SPEED );
+        runOneMotorWithSpeed( MOTOR_ID_FL, -MOBILEBASE_SPEED );
         runOneMotorWithSpeed( MOTOR_ID_FR, MOBILEBASE_SPEED );
         runOneMotorWithSpeed( MOTOR_ID_BL, MOBILEBASE_SPEED );
-        runOneMotorWithSpeed( MOTOR_ID_BR, MOBILEBASE_SPEED );
+        runOneMotorWithSpeed( MOTOR_ID_BR, -MOBILEBASE_SPEED );
         
         MOS_S2MotorSetSync();
         

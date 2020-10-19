@@ -11,11 +11,15 @@ MobileManipulator_Pick은 아두이노 우노 호환보드를 중심으로 전�
  * Serial은 Pick의 모터와 통신하는데 사용하기 때문에 센서 값이나 Pick의 주행 상태 확인, 디버깅을\
  위해서는 소프트웨어 시리얼과 블루투스 모듈을 사용해야 합니다.
 
-코드는 두 개의 샘플 프로젝트로 구성되어 있습니다.
+코드는 네 개의 샘플 프로젝트로 구성되어 있습니다.
 
-```MobileManipulatorMobileBaseAndIMUExample.ino``` 는 모바일베이스와 IMU를 이용해 Pick이 전진과 90도 좌회전을 반복하여 사각형을 그리며 이동하는 예제입니다.
+```01.MobileManipulatorStartSignalSequenceExample.ino``` 는 모터에 내장된 LED를 사용하여 출발 신호를 표시하는 예제입니다.
 
-```MobileManipulatorTakingBlockExample.ino``` 는 PSD센서와 모바일베이스, 매니퓰레이터, Pixy2카메라를 이용해 적재함에 있는 물류미션물품을 꺼내고, 바닥에 내려놓는 예제입니다.
+```02.MobileManipulatorMovingMobileBaseExample.ino``` 는 모바일베이스를 이용하여 전진, 후진 그리고 좌, 우 수평이동으로 사각형의 경로를 그리며 이동하는 예제입니다.
+
+```03.MobileManipulatorMobileBaseAndIMUExample.ino``` 는 모바일베이스와 IMU를 이용해 Pick이 전진과 90도 좌회전을 반복하여 사각형을 그리며 이동하는 예제입니다.
+
+```04.MobileManipulatorTakingBlockExample.ino``` 는 PSD센서와 모바일베이스, 매니퓰레이터, Pixy2카메라를 이용해 적재함에 있는 물류미션물품을 꺼내고, 바닥에 내려놓는 예제입니다.
 
 이 프로젝트들을 빌드하여 Pick에서 테스트 하기 위해서는 기본적인 아두이노 개발환경을 설치하고 USB 포트를 통하여 보드와 연결하고 코드를 다운로드 할 준비가 되어 있어야 합니다. 다음 단락에서는 코드를 이 저장소에서 내려받고 아두이노 개발툴에서 샘플을 Pick으로 다운로드 하는 방법을 설명합니다.
 
@@ -77,7 +81,7 @@ Pick의 우측면에는 Pick의 전체 전원(메인보드, 모터, 블루투스
  - password : 1234
 
 #### 매니퓰레이터
-매니퓰레이터의 모든 모터 position을 센터로 이동시켰을 때, 매니퓰레이터가 일직선이 되기 위해 6번 모터와 7번 모터에 offset이 설정되어있습니다.
+매니퓰레이터의 모든 모터 position을 센터로 이동시켰을 때, 직선이 아닌 링크를 사용한 매니퓰레이터가 일직선이 되기 위해 6번 모터와 7번 모터에 offset이 설정되어있습니다.
  - 6번 모터 offset : 0x97
  - 7번 모터 offset : 0x0F
 
