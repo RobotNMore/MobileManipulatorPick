@@ -33,15 +33,20 @@ MobileManipulator_Pick은 아두이노 우노 호환보드를 중심으로 전�
 
 ### 외부라이브러리 설치
 
+ - 소스코드를 다운로드하면 포함되어있는 libraries.zip파일의 압축을 해제하고, 그 안에 있는 Pixy2, IMU6050, I2Cdev\
+ 이 세 폴더를 폴더째로 아두이노 라이브러리 경로에 넣으면 됩니다. 아두이노 라이브러리 경로는 일반적으로\
+ [C:\Program Files (x86)\Arduino\libraries] 또는 [문서\Arduino\libraries]이며, 둘 중 어느곳에 넣어도 무방합니다.\
+ 최신 버전을 다운받으려면 아래 링크를 참조하시기 바랍니다.
+
  - 물류미션물품을 구분하여 이동 순서와 이동 위치를 정하기 위해 Pixy2카메라를 사용하며, 이 카메라를 사용하기 위해 Pixy2 라이브러리를 사용합니다.\
-라이브러리는 아래 링크에서 다운로드하실 수 있습니다.\
+라이브러리는 아래 링크에서 최신 버전을 다운로드하실 수 있습니다.\
 \
 Pixy2 라이브러리 다운로드 : https://pixycam.com/downloads-pixy2/ \
 \
 링크를 클릭한 후, Arduino libraries and examples 항목에서 다운로드합니다.
 
  - Pick의 이동 상태 확인을 위해 IMU센서를 사용하며, 이 IMU센서를 사용하기 위해 I2CDev와 MPU6050라이브러리를 사용합니다.\
-라이브러리는 아래 링크에서 다운로드하실 수 있습니다.\
+라이브러리는 아래 링크에서 최신 버전을 다운로드하실 수 있습니다.\
 \
 I2Cdev와 MPU6050 Github 저장소 : https://github.com/jrowberg/i2cdevlib \
 \
