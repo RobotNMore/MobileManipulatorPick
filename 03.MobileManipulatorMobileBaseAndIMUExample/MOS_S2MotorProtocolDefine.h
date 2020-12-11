@@ -65,14 +65,14 @@
 #define INST_SET_ZERO_POSITION            0x23
 #define SIZE_SET_ZERO_POSITION            0x06
 
-#define INST_KINETIC_MEMORY_CPS           0x40
-#define SIZE_KINETIC_MEMORY_CPS           0x07
+#define INST_SET_KINETIC_MEMORY_CPS       0x40
+#define SIZE_SET_KINETIC_MEMORY_CPS       0x07
 
-#define INST_KINETIC_MEMORY_SET_FLAG      0x41
-#define SIZE_KINETIC_MEMORY_SET_FLAG      0x07
+#define INST_SET_KINETIC_MEMORY_FLAG      0x41
+#define SIZE_SET_KINETIC_MEMORY_FLAG      0x07
 
-#define INST_KINETIC_MEMORY_GET_SIZE      0x44
-#define SIZE_KINETIC_MEMORY_GET_SIZE      0x06
+#define INST_GET_KINETIC_MEMORY_SIZE      0x44
+#define SIZE_GET_KINETIC_MEMORY_SIZE      0x06
 
 #define ACK_GET_STATUS                    0x85
 #define ACK_GET_PID                       0x92
@@ -81,6 +81,6 @@
 #define ACK_GET_OFFSET                    0x95
 #define ACK_GET_MARGIN                    0x97
 #define ACK_GET_POSITION_LIMIT            0x9A
-#define ACK_KINETIC_MEMORY_GET_SIZE       0xC4
+#define ACK_GET_KINETIC_MEMORY_SIZE       0xC4
 
 #endif

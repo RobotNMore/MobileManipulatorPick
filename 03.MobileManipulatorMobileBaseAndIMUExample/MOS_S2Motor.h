@@ -10,12 +10,13 @@
 
 #define MOS_S2_MOTOR_RECV_TIMEOUT_DEFAULT    500
 
-#define MOS_S2_MOTOR_CW                0
-#define MOS_S2_MOTOR_CCW               1
+#define MOS_S2_MOTOR_CW                    0
+#define MOS_S2_MOTOR_CCW                   1
 
 #define MOS_S2_MOTOR_BAUDRATE                115200
 
-#define RETRY                           3
+#define NO_RESPONSE_COMMAND_RETRY       3
+#define COMMAND_RETRY                   1
 
 uint8_t MOS_S2MotorSendBuf[MOS_S2_MOTOR_SEND_BUFFER_SIZE] = {0,};
 
@@ -33,40 +34,40 @@ uint8_t recvPacketLength = 0;
 
 void MOS_S2MotorResetData( uint8_t id );
 void MOS_S2MotorReboot( uint8_t id );
-void MOS_S2MotorGetStatus( uint8_t id );
+int16_t MOS_S2MotorGetStatus( uint8_t id );
 void MOS_S2MotorSetID( uint8_t id, uint8_t idToChange );
 void MOS_S2MotorSetPIDNoSave( uint8_t id, uint8_t pGain, uint8_t iGain, uint8_t dGain );
 void MOS_S2MotorSetPosition( uint8_t id, bool ledR, bool ledG, bool ledB, uint8_t torque, bool relativeMode, uint16_t position );
-void MOS_S2MotorSetWheel( uint8_t id, bool ledR, bool ledG, bool ledB, bool relativeMode, bool freeWheelMode, bool direction, uint8_t speed );
+void MOS_S2MotorSetWheel( uint8_t id, bool ledR, bool ledG, bool ledB, bool relativeMode, bool freeWheel, bool direction, uint8_t speed );
 void MOS_S2MotorSetOffset( uint8_t id, uint8_t offset );
 void MOS_S2MotorSetMargin( uint8_t id, uint8_t margin );
 void MOS_S2MotorSetPositionLimit( uint8_t id, uint16_t minLimit, uint16_t maxLimit );
 void MOS_S2MotorSetTorque( uint8_t id, bool torqueFlag );
 void MOS_S2MotorSetLED( uint8_t id, bool ledR, bool ledG, bool ledB );
-void MOS_S2MotorGetPID( uint8_t id );
-void MOS_S2MotorGetTemperature( uint8_t id );
-void MOS_S2MotorGetPosition( uint8_t id );
-void MOS_S2MotorGetOffset( uint8_t id );
-void MOS_S2MotorGetMargin( uint8_t id );
-void MOS_S2MotorGetPositionLimit( uint8_t id );
+int16_t MOS_S2MotorGetPID( uint8_t id );
+int16_t MOS_S2MotorGetTemperature( uint8_t id );
+int16_t MOS_S2MotorGetPosition( uint8_t id );
+int16_t MOS_S2MotorGetOffset( uint8_t id );
+int16_t MOS_S2MotorGetMargin( uint8_t id );
+int16_t MOS_S2MotorGetPositionLimit( uint8_t id );
 void MOS_S2MotorSetSync();
 void MOS_S2MotorSetNextPosition( uint8_t id, bool ledR, bool ledG, bool ledB, uint8_t torque, bool relativeMode, uint16_t position );
-void MOS_S2MotorSetNextWheel( uint8_t id, bool ledR, bool ledG, bool ledB, bool relativeMode, bool freeWheelMode, bool direction, uint8_t speed );
+void MOS_S2MotorSetNextWheel( uint8_t id, bool ledR, bool ledG, bool ledB, bool relativeMode, bool freeWheel, bool direction, uint8_t speed );
 void MOS_S2MotorSetBaudrate( uint8_t id, uint8_t baudrate );
 void MOS_S2MotorSetZeroPosition( uint8_t id );
-void MOS_S2MotorKineticMemoryCPS( uint8_t id, bool captureStartOrEnd, bool playRunOrStop );
-void MOS_S2MotorKineticMemorySetFlag( uint8_t id, bool initialFlag, bool autoRunFlag );
-void MOS_S2MotorKineticMemoryGetSize( uint8_t id );
+void MOS_S2MotorSetKineticMemoryCPS( uint8_t id, bool captureStartOrEnd, bool playRunOrStop );
+void MOS_S2MotorSetKineticMemoryFlag( uint8_t id, bool initialFlag, bool autoRunFlag );
+int16_t MOS_S2MotorGetKineticMemorySize( uint8_t id );
 
 // -----------------------------------------------------private
 
-void sendPacket();
-uint8_t sendPacketAndRecvResponse();
+void sendPacket( uint8_t retry = NO_RESPONSE_COMMAND_RETRY );
+int16_t sendPacketAndRecvResponse();
 void clearBuffer( uint8_t* buffer, uint8_t bufferSize );
-uint8_t calcChecksum( uint8_t* buffer );
+uint8_t calcCheckSum( uint8_t* buffer );
 void printBufferStatus( uint8_t* buffer, uint8_t bufferSize );
-uint8_t recvPacket();
-void parseData( uint8_t* buffer );
+int16_t recvPacket();
+int16_t parseData( uint8_t* buffer );
 
 // ------------------------------------------------------------
 
@@ -90,14 +91,14 @@ void MOS_S2MotorReboot( uint8_t id )
   sendPacket();
 }
 
-void MOS_S2MotorGetStatus( uint8_t id )
+int16_t MOS_S2MotorGetStatus( uint8_t id )
 {
   uint8_t index = 2;
   clearBuffer( MOS_S2MotorSendBuf, sizeof( MOS_S2MotorSendBuf ) );
   MOS_S2MotorSendBuf[index++] = id;
   MOS_S2MotorSendBuf[index++] = SIZE_GET_STATUS;
   MOS_S2MotorSendBuf[index++] = INST_GET_STATUS;
-  sendPacketAndRecvResponse();
+  return sendPacketAndRecvResponse();
 }
 
 void MOS_S2MotorSetID( uint8_t id, uint8_t idToChange )
@@ -112,7 +113,7 @@ void MOS_S2MotorSetID( uint8_t id, uint8_t idToChange )
 }
 
 void MOS_S2MotorSetPIDNoSave( uint8_t id, uint8_t pGain, uint8_t iGain, uint8_t dGain )
-{ 
+{
   uint8_t index = 2;
   clearBuffer( MOS_S2MotorSendBuf, sizeof( MOS_S2MotorSendBuf ) );
   MOS_S2MotorSendBuf[index++] = id;
@@ -125,7 +126,7 @@ void MOS_S2MotorSetPIDNoSave( uint8_t id, uint8_t pGain, uint8_t iGain, uint8_t 
 }
 
 void MOS_S2MotorSetPosition( uint8_t id, bool ledR, bool ledG, bool ledB, uint8_t torque, bool relativeMode, uint16_t position )
-{ 
+{
   uint16_t data = 0;
   data = data | ledR << 15;
   data = data | ledG << 14;
@@ -134,7 +135,7 @@ void MOS_S2MotorSetPosition( uint8_t id, bool ledR, bool ledG, bool ledB, uint8_
   data = data | ( torque & 0x03 ) << 11;
   data = data | relativeMode << 10;
   data = data | ( position & 0x03FF );
-  
+
   uint8_t index = 2;
   clearBuffer( MOS_S2MotorSendBuf, sizeof( MOS_S2MotorSendBuf ) );
   MOS_S2MotorSendBuf[index++] = id;
@@ -145,8 +146,8 @@ void MOS_S2MotorSetPosition( uint8_t id, bool ledR, bool ledG, bool ledB, uint8_
   sendPacket();
 }
 
-void MOS_S2MotorSetWheel( uint8_t id, bool ledR, bool ledG, bool ledB, bool relativeMode, bool freeWheelMode, bool direction, uint8_t speed )
-{ 
+void MOS_S2MotorSetWheel( uint8_t id, bool ledR, bool ledG, bool ledB, bool relativeMode, bool freeWheel, bool direction, uint8_t speed )
+{
   uint8_t data = 0;
   data = data | ledR << 7;
   data = data | ledG << 6;
@@ -154,7 +155,7 @@ void MOS_S2MotorSetWheel( uint8_t id, bool ledR, bool ledG, bool ledB, bool rela
   data = data | 1 << 4;
   data = data | 1 << 3;
   data = data | relativeMode << 2;
-  data = data | freeWheelMode << 1;
+  data = data | freeWheel << 1;
   data = data | direction;
 
   uint8_t index = 2;
@@ -190,7 +191,7 @@ void MOS_S2MotorSetMargin( uint8_t id, uint8_t margin )
 }
 
 void MOS_S2MotorSetPositionLimit( uint8_t id, uint16_t minLimit, uint16_t maxLimit )
-{ 
+{
   minLimit = constrain( minLimit, 1, 0x03FF );
   maxLimit = constrain( maxLimit, 1, 0x03FF );
 
@@ -221,7 +222,7 @@ void MOS_S2MotorSetTorque( uint8_t id, bool torqueFlag )
 }
 
 void MOS_S2MotorSetLED( uint8_t id, bool ledR, bool ledG, bool ledB )
-{ 
+{
   uint8_t data = 0;
   data = data | ledR << 7;
   data = data | ledG << 6;
@@ -236,64 +237,65 @@ void MOS_S2MotorSetLED( uint8_t id, bool ledR, bool ledG, bool ledB )
   sendPacket();
 }
 
-void MOS_S2MotorGetPID( uint8_t id )
+int16_t MOS_S2MotorGetPID( uint8_t id )
 {
   uint8_t index = 2;
   clearBuffer( MOS_S2MotorSendBuf, sizeof( MOS_S2MotorSendBuf ) );
   MOS_S2MotorSendBuf[index++] = id;
   MOS_S2MotorSendBuf[index++] = SIZE_GET_PID;
   MOS_S2MotorSendBuf[index++] = INST_GET_PID;
-  sendPacketAndRecvResponse();
+  return sendPacketAndRecvResponse();
 }
 
-void MOS_S2MotorGetTemperature( uint8_t id )
+int16_t MOS_S2MotorGetTemperature( uint8_t id )
 {
   uint8_t index = 2;
   clearBuffer( MOS_S2MotorSendBuf, sizeof( MOS_S2MotorSendBuf ) );
   MOS_S2MotorSendBuf[index++] = id;
   MOS_S2MotorSendBuf[index++] = SIZE_GET_TEMPERATURE;
   MOS_S2MotorSendBuf[index++] = INST_GET_TEMPERATURE;
-  sendPacketAndRecvResponse();
+  return sendPacketAndRecvResponse();
 }
 
-void MOS_S2MotorGetPosition( uint8_t id )
+int16_t MOS_S2MotorGetPosition( uint8_t id )
 {
   uint8_t index = 2;
   clearBuffer( MOS_S2MotorSendBuf, sizeof( MOS_S2MotorSendBuf ) );
   MOS_S2MotorSendBuf[index++] = id;
   MOS_S2MotorSendBuf[index++] = SIZE_GET_POSITION;
   MOS_S2MotorSendBuf[index++] = INST_GET_POSITION;
-  sendPacketAndRecvResponse();
+  int16_t temp = sendPacketAndRecvResponse();
+  return temp;
 }
 
-void MOS_S2MotorGetOffset( uint8_t id )
+int16_t MOS_S2MotorGetOffset( uint8_t id )
 {
   uint8_t index = 2;
   clearBuffer( MOS_S2MotorSendBuf, sizeof( MOS_S2MotorSendBuf ) );
   MOS_S2MotorSendBuf[index++] = id;
   MOS_S2MotorSendBuf[index++] = SIZE_GET_OFFSET;
   MOS_S2MotorSendBuf[index++] = INST_GET_OFFSET;
-  sendPacketAndRecvResponse();
+  return sendPacketAndRecvResponse();
 }
 
-void MOS_S2MotorGetMargin( uint8_t id )
+int16_t MOS_S2MotorGetMargin( uint8_t id )
 {
   uint8_t index = 2;
   clearBuffer( MOS_S2MotorSendBuf, sizeof( MOS_S2MotorSendBuf ) );
   MOS_S2MotorSendBuf[index++] = id;
   MOS_S2MotorSendBuf[index++] = SIZE_GET_MARGIN;
   MOS_S2MotorSendBuf[index++] = INST_GET_MARGIN;
-  sendPacketAndRecvResponse();
+  return sendPacketAndRecvResponse();
 }
 
-void MOS_S2MotorGetPositionLimit( uint8_t id )
+int16_t MOS_S2MotorGetPositionLimit( uint8_t id )
 {
   uint8_t index = 2;
   clearBuffer( MOS_S2MotorSendBuf, sizeof( MOS_S2MotorSendBuf ) );
   MOS_S2MotorSendBuf[index++] = id;
   MOS_S2MotorSendBuf[index++] = SIZE_GET_POSITION_LIMIT;
   MOS_S2MotorSendBuf[index++] = INST_GET_POSITION_LIMIT;
-  sendPacketAndRecvResponse();
+  return sendPacketAndRecvResponse();
 }
 
 void MOS_S2MotorSetSync()
@@ -307,7 +309,7 @@ void MOS_S2MotorSetSync()
 }
 
 void MOS_S2MotorSetNextPosition( uint8_t id, bool ledR, bool ledG, bool ledB, uint8_t torque, bool relativeMode, uint16_t position )
-{ 
+{
   uint16_t data = 0;
   data = data | ledR << 15;
   data = data | ledG << 14;
@@ -327,8 +329,8 @@ void MOS_S2MotorSetNextPosition( uint8_t id, bool ledR, bool ledG, bool ledB, ui
   sendPacket();
 }
 
-void MOS_S2MotorSetNextWheel( uint8_t id, bool ledR, bool ledG, bool ledB, bool relativeMode, bool freeWheelMode, bool direction, uint8_t speed )
-{ 
+void MOS_S2MotorSetNextWheel( uint8_t id, bool ledR, bool ledG, bool ledB, bool relativeMode, bool freeWheel, bool direction, uint8_t speed )
+{
   uint8_t data = 0;
   data = data | ledR << 7;
   data = data | ledG << 6;
@@ -336,9 +338,9 @@ void MOS_S2MotorSetNextWheel( uint8_t id, bool ledR, bool ledG, bool ledB, bool 
   data = data | 1 << 4;
   data = data | 1 << 3;
   data = data | relativeMode << 2;
-  data = data | freeWheelMode << 1;
+  data = data | freeWheel << 1;
   data = data | direction;
-  
+
   uint8_t index = 2;
   clearBuffer( MOS_S2MotorSendBuf, sizeof( MOS_S2MotorSendBuf ) );
   MOS_S2MotorSendBuf[index++] = id;
@@ -387,7 +389,7 @@ void MOS_S2MotorSetZeroPosition( uint8_t id )
   sendPacket();
 }
 
-void MOS_S2MotorKineticMemoryCPS( uint8_t id, bool captureStartOrEnd, bool playRunOrStop )
+void MOS_S2MotorSetKineticMemoryCPS( uint8_t id, bool captureStartOrEnd, bool playRunOrStop )
 {
   uint8_t data = 0;
   data = data | captureStartOrEnd << 1;
@@ -396,49 +398,49 @@ void MOS_S2MotorKineticMemoryCPS( uint8_t id, bool captureStartOrEnd, bool playR
   uint8_t index = 2;
   clearBuffer( MOS_S2MotorSendBuf, sizeof( MOS_S2MotorSendBuf ) );
   MOS_S2MotorSendBuf[index++] = id;
-  MOS_S2MotorSendBuf[index++] = SIZE_KINETIC_MEMORY_CPS;
-  MOS_S2MotorSendBuf[index++] = INST_KINETIC_MEMORY_CPS;
+  MOS_S2MotorSendBuf[index++] = SIZE_SET_KINETIC_MEMORY_CPS;
+  MOS_S2MotorSendBuf[index++] = INST_SET_KINETIC_MEMORY_CPS;
   MOS_S2MotorSendBuf[index++] = data;
   sendPacket();
 }
 
-void MOS_S2MotorKineticMemorySetFlag( uint8_t id, bool initialFlag, bool autoRunFlag )
+void MOS_S2MotorSetKineticMemoryFlag( uint8_t id, bool initialFlag, bool autoRunFlag )
 {
   uint8_t data = 0;
   data = data | initialFlag << 1;
   data = data | autoRunFlag;
-  
+
   uint8_t index = 2;
   clearBuffer( MOS_S2MotorSendBuf, sizeof( MOS_S2MotorSendBuf ) );
   MOS_S2MotorSendBuf[index++] = id;
-  MOS_S2MotorSendBuf[index++] = SIZE_KINETIC_MEMORY_SET_FLAG;
-  MOS_S2MotorSendBuf[index++] = INST_KINETIC_MEMORY_SET_FLAG;
+  MOS_S2MotorSendBuf[index++] = SIZE_SET_KINETIC_MEMORY_FLAG;
+  MOS_S2MotorSendBuf[index++] = INST_SET_KINETIC_MEMORY_FLAG;
   MOS_S2MotorSendBuf[index++] = data;
   sendPacket();
 }
 
-void MOS_S2MotorKineticMemoryGetSize( uint8_t id )
+int16_t MOS_S2MotorGetKineticMemorySize( uint8_t id )
 {
   uint8_t index = 2;
   clearBuffer( MOS_S2MotorSendBuf, sizeof( MOS_S2MotorSendBuf ) );
   MOS_S2MotorSendBuf[index++] = id;
-  MOS_S2MotorSendBuf[index++] = SIZE_KINETIC_MEMORY_GET_SIZE;
-  MOS_S2MotorSendBuf[index++] = INST_KINETIC_MEMORY_GET_SIZE;
-  sendPacketAndRecvResponse();
+  MOS_S2MotorSendBuf[index++] = SIZE_GET_KINETIC_MEMORY_SIZE;
+  MOS_S2MotorSendBuf[index++] = INST_GET_KINETIC_MEMORY_SIZE;
+  return sendPacketAndRecvResponse();
 }
 
-void sendPacket()
+void sendPacket( uint8_t retry )
 {
   uint8_t packetSize = MOS_S2MotorSendBuf[3];
 
   // header
   MOS_S2MotorSendBuf[0] = 0xFF;
   MOS_S2MotorSendBuf[1] = 0xFF;
-  
-  // checksum
-  MOS_S2MotorSendBuf[packetSize - 1] = calcChecksum( MOS_S2MotorSendBuf );
 
-  for( int j = 0 ; j < RETRY ; j++ )
+  // checksum
+  MOS_S2MotorSendBuf[packetSize - 1] = calcCheckSum( MOS_S2MotorSendBuf );
+
+  for( int j = 0 ; j < retry ; j++ )
   {
     for( int i = 0 ; i < packetSize ; i++ )
     {
@@ -448,25 +450,26 @@ void sendPacket()
 }
 
 /*
- * 타임아웃이면 0을 return
- * 응답을 정상적으로 받으면 1을 return
+ * 응답을 정상적으로 받으면 결과값을 return
+ * 타임아웃이면 -1을 return
  */
-uint8_t sendPacketAndRecvResponse()
+int16_t sendPacketAndRecvResponse()
 {
-  sendPacket();
+  sendPacket( COMMAND_RETRY );
 
   uint32_t startTime = millis();
   bool isReceived = 0;
-  
+
   while( millis() - startTime < MOS_S2_MOTOR_RECV_TIMEOUT_DEFAULT )
   {
-    if( recvPacket() )
+    int16_t result = recvPacket();
+    if( result != -1 ) // 파싱 준비되지 않음/파싱 실패
     {
       // recvPacket안에서 parsing함
-      return 1;
+      return result;
     }
   }
-  return 0;
+  return -1; // timeout
 }
 
 void clearBuffer( uint8_t* buffer, uint8_t bufferSize )
@@ -477,7 +480,7 @@ void clearBuffer( uint8_t* buffer, uint8_t bufferSize )
   }
 }
 
-uint8_t calcChecksum( uint8_t* buffer )
+uint8_t calcCheckSum( uint8_t* buffer )
 {
   uint8_t sum = 0, checksum = 0;
   uint8_t dataLength = buffer[3];
@@ -494,27 +497,27 @@ void printBufferStatus( uint8_t* buffer, uint8_t bufferSize )
 {
   for( int i = 0 ; i < bufferSize ; i++ ) {
 #ifdef MOS_S2_MOTOR_DEBUG
-    DebuggingSerial.print( buffer[i], HEX );
+    SWSerial.print( buffer[i], HEX );
 #endif
     if( i == bufferSize - 1 )
     {
 #ifdef MOS_S2_MOTOR_DEBUG
-      DebuggingSerial.println();
+      SWSerial.println();
 #endif
     }
     else {
 #ifdef MOS_S2_MOTOR_DEBUG
-      DebuggingSerial.print(", ");
+      SWSerial.print(", ");
 #endif
     }
   }
 }
 
 /*
- * 파싱 준비가 되면 1을 return
- * 준비되지 않았으면 0을 return
+ * 파싱 되면 결과값을 return
+ * 파싱 준비되지 않았으면 -1을 return
  */
-uint8_t recvPacket()
+int16_t recvPacket()
 {
   if( MOS_S2_MOTOR_BUS.available() )
   {
@@ -543,123 +546,140 @@ uint8_t recvPacket()
       {
         if( MOS_S2MotorRecvBufIndex == recvPacketLength - 1 )
         {
-          uint8_t checksum = calcChecksum( MOS_S2MotorRecvBuf );
+          uint8_t checksum = calcCheckSum( MOS_S2MotorRecvBuf );
+          int16_t result = 0;
           if( checksum == MOS_S2MotorRecvBuf[recvPacketLength - 1] )
           {
-            parseData( MOS_S2MotorRecvBuf );
+            result = parseData( MOS_S2MotorRecvBuf ); // 잘못된 ackvalue면 -1을 리턴
           }
           clearBuffer( MOS_S2MotorRecvBuf, sizeof( MOS_S2MotorRecvBuf ) );
           isRecvPacketBegan = 0;
           prevRecvData = 0;
           recvPacketLength = 0;
           MOS_S2MotorRecvBufIndex = 0;
-          return 1;
+          return result;
         }
       }
       MOS_S2MotorRecvBufIndex ++;
     }
     prevRecvData = recvData;
   }
-  return 0;
+  return -1; // 파싱 준비되지 않음
 }
 
-
-void parseData( uint8_t* buffer )
+/*
+ * 잘못된 ackvalue일 때는 -1을 리턴.
+ * 값이 없거나 값이 여러 개 들어오는 경우
+ *   (예를 들면 PID값을 요청하면 3개를 받아야 함) 0을 리턴
+ * 값이 한 개만 들어오면 해당 값을 리턴
+ */
+int16_t parseData( uint8_t* buffer )
 {
   uint8_t motorID = buffer[2];
   uint8_t recvPacketLength = buffer[3];
   uint8_t ackValue = buffer[4];
 
+  int16_t result = -1;
+
   switch( ackValue )
   {
     case ACK_GET_STATUS:
 #ifdef MOS_S2_MOTOR_DEBUG
-      DebuggingSerial.println( F( "ack for getStatus is received" ) );
+      SWSerial.println( F( "ack for getStatus is received" ) );
       printBufferStatus( MOS_S2MotorRecvBuf, sizeof( MOS_S2MotorRecvBuf ) );
+      result = 0;
 #endif
       break;
     case ACK_GET_PID:
 #ifdef MOS_S2_MOTOR_DEBUG
-      DebuggingSerial.println( F( "ack for getPID is received" ) );
-      DebuggingSerial.print( F( "motorID " ) );
-      DebuggingSerial.print( buffer[2] );
-      DebuggingSerial.print( F( "'s pGain : " ) );
-      DebuggingSerial.print( buffer[6] );
-      DebuggingSerial.print( F( ", iGain : " ) );
-      DebuggingSerial.print( buffer[7] );
-      DebuggingSerial.print( F( ", dGain : " ) );
-      DebuggingSerial.println( buffer[8] );
+      SWSerial.println( F( "ack for getPID is received" ) );
+      SWSerial.print( F( "motorID " ) );
+      SWSerial.print( buffer[2] );
+      SWSerial.print( F( "'s pGain : " ) );
+      SWSerial.print( buffer[6] );
+      SWSerial.print( F( ", iGain : " ) );
+      SWSerial.print( buffer[7] );
+      SWSerial.print( F( ", dGain : " ) );
+      SWSerial.println( buffer[8] );
       printBufferStatus( MOS_S2MotorRecvBuf, sizeof( MOS_S2MotorRecvBuf ) );
+      result = 0;
 #endif
       break;
     case ACK_GET_TEMPERATURE:
 #ifdef MOS_S2_MOTOR_DEBUG
-      DebuggingSerial.println( F( "ack for getTemperature is received" ) );
-      DebuggingSerial.print( F( "motorID " ) );
-      DebuggingSerial.print( buffer[2] );
-      DebuggingSerial.print( F( "'s temperature : " ) );
-      DebuggingSerial.println( buffer[6] );
+      SWSerial.println( F( "ack for getTemperature is received" ) );
+      SWSerial.print( F( "motorID " ) );
+      SWSerial.print( buffer[2] );
+      SWSerial.print( F( "'s temperature : " ) );
+      SWSerial.println( buffer[6] );
       printBufferStatus( MOS_S2MotorRecvBuf, sizeof( MOS_S2MotorRecvBuf ) );
+      result = buffer[6];
 #endif
       break;
     case ACK_GET_POSITION:
 #ifdef MOS_S2_MOTOR_DEBUG
-      DebuggingSerial.println( F( "ack for getPosition is received" ) );
-      DebuggingSerial.print( F( "motorID " ) );
-      DebuggingSerial.print( buffer[2] );
-      DebuggingSerial.print( F( "'s position : " ) );
-      DebuggingSerial.println( (uint16_t)( buffer[6] << 8 | buffer[7] ) );
+      SWSerial.println( F( "ack for getPosition is received" ) );
+      SWSerial.print( F( "motorID " ) );
+      SWSerial.print( buffer[2] );
+      SWSerial.print( F( "'s position : " ) );
+      SWSerial.println( (uint16_t)( buffer[6] << 8 | buffer[7] ) );
       printBufferStatus( MOS_S2MotorRecvBuf, sizeof( MOS_S2MotorRecvBuf ) );
+      result = buffer[6] << 8 | buffer[7];
 #endif
       break;
     case ACK_GET_OFFSET:
 #ifdef MOS_S2_MOTOR_DEBUG
-      DebuggingSerial.println( F( "ack for getOffset is received" ) );
-      DebuggingSerial.print( F( "motorID " ) );
-      DebuggingSerial.print( buffer[2] );
-      DebuggingSerial.print( F( "'s offset : " ) );
-      DebuggingSerial.println( buffer[6] );
+      SWSerial.println( F( "ack for getOffset is received" ) );
+      SWSerial.print( F( "motorID " ) );
+      SWSerial.print( buffer[2] );
+      SWSerial.print( F( "'s offset : " ) );
+      SWSerial.println( buffer[6] );
       printBufferStatus( MOS_S2MotorRecvBuf, sizeof( MOS_S2MotorRecvBuf ) );
+      result = buffer[6];
 #endif
       break;
     case ACK_GET_MARGIN:
 #ifdef MOS_S2_MOTOR_DEBUG
-      DebuggingSerial.println( F( "ack for getMargin is received" ) );
-      DebuggingSerial.print( F( "motorID " ) );
-      DebuggingSerial.print( buffer[2] );
-      DebuggingSerial.print( F( "'s margin : " ) );
-      DebuggingSerial.println( buffer[6] );
+      SWSerial.println( F( "ack for getMargin is received" ) );
+      SWSerial.print( F( "motorID " ) );
+      SWSerial.print( buffer[2] );
+      SWSerial.print( F( "'s margin : " ) );
+      SWSerial.println( buffer[6] );
       printBufferStatus( MOS_S2MotorRecvBuf, sizeof( MOS_S2MotorRecvBuf ) );
+      result = buffer[6];
 #endif
       break;
     case ACK_GET_POSITION_LIMIT:
 #ifdef MOS_S2_MOTOR_DEBUG
-      DebuggingSerial.println( F( "ack for getPositionLimit is received" ) );
-      DebuggingSerial.print( F( "motorID " ) );
-      DebuggingSerial.print( buffer[2] );
-      DebuggingSerial.print( F( "'s min position limit : " ) );
-      DebuggingSerial.print( (uint16_t)( buffer[6] << 8 | buffer[7] ) );
-      DebuggingSerial.print( F( ", max position limit : " ) );
-      DebuggingSerial.println( (uint16_t)( buffer[8] << 8 | buffer[9] ) );
+      SWSerial.println( F( "ack for getPositionLimit is received" ) );
+      SWSerial.print( F( "motorID " ) );
+      SWSerial.print( buffer[2] );
+      SWSerial.print( F( "'s min position limit : " ) );
+      SWSerial.print( (uint16_t)( buffer[6] << 8 | buffer[7] ) );
+      SWSerial.print( F( ", max position limit : " ) );
+      SWSerial.println( (uint16_t)( buffer[8] << 8 | buffer[9] ) );
       printBufferStatus( MOS_S2MotorRecvBuf, sizeof( MOS_S2MotorRecvBuf ) );
+      result = 0
 #endif
       break;
-    case ACK_KINETIC_MEMORY_GET_SIZE:
+    case ACK_GET_KINETIC_MEMORY_SIZE:
 #ifdef MOS_S2_MOTOR_DEBUG
-      DebuggingSerial.println( F( "ack for getKineticMemoryGetSize is received" ) );
-      DebuggingSerial.print( F( "motorID " ) );
-      DebuggingSerial.print( buffer[2] );
-      DebuggingSerial.print( F( "'s auto-run flag : " ) );
-      DebuggingSerial.print( buffer[6] >> 7 | 0x00FF );
-      DebuggingSerial.print( F( ", size : " ) );
-      DebuggingSerial.println( (uint16_t)( buffer[6] << 8 | buffer[7] ) );
+      SWSerial.println( F( "ack for getKineticMemoryGetSize is received" ) );
+      SWSerial.print( F( "motorID " ) );
+      SWSerial.print( buffer[2] );
+      SWSerial.print( F( "'s auto-run flag : " ) );
+      SWSerial.print( buffer[6] >> 7 | 0x00FF );
+      SWSerial.print( F( ", size : " ) );
+      SWSerial.println( (uint16_t)( buffer[6] << 8 | buffer[7] ) );
       printBufferStatus( MOS_S2MotorRecvBuf, sizeof( MOS_S2MotorRecvBuf ) );
+      result = buffer[6] << 8 | buffer[7]; // 2바이트 안에 플래그랑 사이즈가 같이 나옴
 #endif
       break;
   }
 #ifdef MOS_S2_MOTOR_DEBUG
-  DebuggingSerial.println();
+  SWSerial.println();
 #endif
+  return result;
 }
 
 #endif
