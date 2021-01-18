@@ -291,11 +291,11 @@ void loop() {
   // 현재 미션 진행 단계가 1또는 4일 때
   else if( currentStep == 2 || currentStep == 5 ) // PSD로 거리 측정하며 전진
   {
-    // 현재 거리 값 계산
+    // 현재 거리 값 계산. 센서의 거리-전압 특성을 이용해 직선의 방정식을 계산 후 사용
     distance[LEFT_PSD_INDEX] = 1/((analogRead(PIN_LEFT_PSD)*2.19e-4) - 6.8e-3);
     distance[RIGHT_PSD_INDEX] = 1/((analogRead(PIN_RIGHT_PSD)*2.54e-4) - 2.38e-2);
     
-    // 이전 결과 값 비율을 줄이고 현재 거리 값을 결과에 반영하여 결과에 저장
+    // 지수가중이동평균필터. 이전 결과 값 비율을 줄이고 현재 거리 값을 결과에 반영하여 결과에 저장
     result[LEFT_PSD_INDEX] = prevValueWeight*result[LEFT_PSD_INDEX]
                               + (1 - prevValueWeight)*distance[LEFT_PSD_INDEX];
     result[RIGHT_PSD_INDEX] = prevValueWeight*result[RIGHT_PSD_INDEX]
