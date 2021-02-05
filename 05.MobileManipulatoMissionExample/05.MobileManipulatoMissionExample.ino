@@ -281,7 +281,7 @@ void loop() {
   dt = calcDT();
   yawAngle = yawAngle + gz*dt/IMU_ADC_TO_DEGREE;
 
-  if( currentStep == 1 )
+  if( currentStep == 1 ) // 일정 시간 동안 진행
   {
     if( startSignalSequence() == 1 )
     {
@@ -732,7 +732,7 @@ void robotArmInverseMove( int16_t x, uint16_t y, uint16_t z, int16_t angle )
                                                // 2번째 링크가 끝나는 점의 위치
   // 세타1을 구하기 위해 사용되는 변수
   float k1 = L1 + L2*(y2*y2 + z2*z2 - L1*L1 - L2*L2)/(2*L1*L2);
-  float k2 = L1*sqrt(1 - pow((y2*y2 + z2*z2 - L1*L1 - L2*L2)/(2*L1*L2), 2));
+  float k2 = L2*sqrt(1 - pow((y2*y2 + z2*z2 - L1*L1 - L2*L2)/(2*L1*L2), 2));
   float theta1 = 0, theta2 = 0, theta3 = 0, theta4 = 0; // 모터별 세타 변수
 
   theta1 = RTD(atan2(x, y));
