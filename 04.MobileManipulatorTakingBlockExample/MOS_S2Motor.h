@@ -587,8 +587,8 @@ int16_t parseData( uint8_t* buffer )
 #ifdef MOS_S2_MOTOR_DEBUG
       SWSerial.println( F( "ack for getStatus is received" ) );
       printBufferStatus( MOS_S2MotorRecvBuf, sizeof( MOS_S2MotorRecvBuf ) );
-      result = 0;
 #endif
+      result = 0;
       break;
     case ACK_GET_PID:
 #ifdef MOS_S2_MOTOR_DEBUG
@@ -602,8 +602,8 @@ int16_t parseData( uint8_t* buffer )
       SWSerial.print( F( ", dGain : " ) );
       SWSerial.println( buffer[8] );
       printBufferStatus( MOS_S2MotorRecvBuf, sizeof( MOS_S2MotorRecvBuf ) );
-      result = 0;
 #endif
+      result = 0;
       break;
     case ACK_GET_TEMPERATURE:
 #ifdef MOS_S2_MOTOR_DEBUG
@@ -613,8 +613,8 @@ int16_t parseData( uint8_t* buffer )
       SWSerial.print( F( "'s temperature : " ) );
       SWSerial.println( buffer[6] );
       printBufferStatus( MOS_S2MotorRecvBuf, sizeof( MOS_S2MotorRecvBuf ) );
-      result = buffer[6];
 #endif
+      result = buffer[6];
       break;
     case ACK_GET_POSITION:
 #ifdef MOS_S2_MOTOR_DEBUG
@@ -624,8 +624,8 @@ int16_t parseData( uint8_t* buffer )
       SWSerial.print( F( "'s position : " ) );
       SWSerial.println( (uint16_t)( buffer[6] << 8 | buffer[7] ) );
       printBufferStatus( MOS_S2MotorRecvBuf, sizeof( MOS_S2MotorRecvBuf ) );
-      result = buffer[6] << 8 | buffer[7];
 #endif
+      result = buffer[6] << 8 | buffer[7];
       break;
     case ACK_GET_OFFSET:
 #ifdef MOS_S2_MOTOR_DEBUG
@@ -635,8 +635,8 @@ int16_t parseData( uint8_t* buffer )
       SWSerial.print( F( "'s offset : " ) );
       SWSerial.println( buffer[6] );
       printBufferStatus( MOS_S2MotorRecvBuf, sizeof( MOS_S2MotorRecvBuf ) );
-      result = buffer[6];
 #endif
+      result = buffer[6];
       break;
     case ACK_GET_MARGIN:
 #ifdef MOS_S2_MOTOR_DEBUG
@@ -646,8 +646,8 @@ int16_t parseData( uint8_t* buffer )
       SWSerial.print( F( "'s margin : " ) );
       SWSerial.println( buffer[6] );
       printBufferStatus( MOS_S2MotorRecvBuf, sizeof( MOS_S2MotorRecvBuf ) );
-      result = buffer[6];
 #endif
+      result = buffer[6];
       break;
     case ACK_GET_POSITION_LIMIT:
 #ifdef MOS_S2_MOTOR_DEBUG
@@ -659,8 +659,8 @@ int16_t parseData( uint8_t* buffer )
       SWSerial.print( F( ", max position limit : " ) );
       SWSerial.println( (uint16_t)( buffer[8] << 8 | buffer[9] ) );
       printBufferStatus( MOS_S2MotorRecvBuf, sizeof( MOS_S2MotorRecvBuf ) );
-      result = 0
 #endif
+      result = 0;
       break;
     case ACK_GET_KINETIC_MEMORY_SIZE:
 #ifdef MOS_S2_MOTOR_DEBUG
@@ -672,8 +672,8 @@ int16_t parseData( uint8_t* buffer )
       SWSerial.print( F( ", size : " ) );
       SWSerial.println( (uint16_t)( buffer[6] << 8 | buffer[7] ) );
       printBufferStatus( MOS_S2MotorRecvBuf, sizeof( MOS_S2MotorRecvBuf ) );
-      result = buffer[6] << 8 | buffer[7]; // 2바이트 안에 플래그랑 사이즈가 같이 나옴
 #endif
+      result = buffer[6] << 8 | buffer[7]; // 2바이트 안에 플래그랑 사이즈가 같이 나옴
       break;
   }
 #ifdef MOS_S2_MOTOR_DEBUG
