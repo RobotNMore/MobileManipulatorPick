@@ -71,7 +71,7 @@ void loop() {
   runOneMotorWithSpeed( MOTOR_ID_BL, MOBILEBASE_SPEED );
   runOneMotorWithSpeed( MOTOR_ID_BR, MOBILEBASE_SPEED );
   MOS_S2MotorSetSync();
-  delay(2000);
+  delay(3000);
 
   // 정지
   moveMobileBaseWithFourVelocity( 0, 0, 0, 0 ); // 이런 방식으로도 이동시킬 수 있음
